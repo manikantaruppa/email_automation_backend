@@ -16,6 +16,21 @@ app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+
+// Add this after your other middleware
+if (process.env.NODE_ENV === 'production') {
+  // Trust proxy for Render
+  app.set('trust proxy', 1);
+  
+  // Update CORS for production
+  app.use(cors({
+    origin: process.env.FRONTEND_URL || '*',
+    credentials: true
+  }));
+} else {
+  app.use(cors());
+}
+
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
